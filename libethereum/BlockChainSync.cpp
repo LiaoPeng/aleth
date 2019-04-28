@@ -33,6 +33,7 @@ namespace  // Helper functions.
 constexpr unsigned c_maxPeerUknownNewBlocks = 1024; /// Max number of unknown new blocks peer can give us
 constexpr unsigned c_maxRequestHeaders = 1024;
 constexpr unsigned c_maxRequestBodies = 1024;
+constexpr unsigned c_daoForkBlockNumber = 1920000;
 
 template<typename T> bool haveItem(std::map<unsigned, T>& _container, unsigned _number)
 {
@@ -202,7 +203,7 @@ void BlockChainSync::onPeerStatus(EthereumPeer const& _peer)
     }
 
     // Before starting to exchange the data with the node, let's verify that it's on our chain
-    if (!requestDaoForkBlockHeader(_peer.id()))
+    if (host().chain().number() < c_daoForkBlockNumber || !requestDaoForkBlockHeader(_peer.id()))
     {
         // DAO challenge not needed
         syncPeer(_peer.id(), false);
